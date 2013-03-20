@@ -1,9 +1,22 @@
 #! /user/bin/env ruby
 # -*- mode:ruby; coding:utf-8 -*-
 
+# original source from http://www.fitbitclient.com/guide/using-fitgem
+
 require "fitgem"
 require "pp"
 require "yaml"
+begin
+  require "fastercsv"
+rescue LoadError
+  require "csv"
+  FCSV = CSV
+end
+
+unless ARGV.first
+  warn "Usage: bundle exec ruby bin/main.rb graph.csv"
+  exit -1
+end
 
 # Load the existing yml config
 config = begin
@@ -57,5 +70,17 @@ end
 # ============================================================
 # Add Fitgem API calls on the client object below this line
 
-pp client.activities_on_date 'today'
+#pp client.activities_on_date 'today'
+client.api_unit_system = Fitgem::ApiUnitSystem.METRIC
+
+FCSV.foreach(ARGV.first, :headers => true) do |row|
+  date, weight, fat = row.fields
+  hash = {:date => date}
+  hash[:weight] = weight unless weight.empty?
+  hash[:fat] = fat unless fat.empty?
+
+  pp client.log_body_measurements(hash) if hash.keys.size > 1
+  sleep 1
+end
+
 
