@@ -1,0 +1,14 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    fastercsv (1.5.5)
+    fitgem (0.6.1)
+      oauth
+    oauth (0.4.7)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  fastercsv (~> 1.5.0)
+  fitgem
